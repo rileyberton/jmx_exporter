@@ -13,6 +13,7 @@ import io.prometheus.client.hotspot.DefaultExports;
 public class JavaAgent {
 
     static HTTPServer server;
+    static KafkaExporter kafkaExporter;
 
     public static void agentmain(String agentArgument, Instrumentation instrumentation) throws Exception {
         premain(agentArgument, instrumentation);
@@ -29,6 +30,7 @@ public class JavaAgent {
             new JmxCollector(new File(config.file)).register();
             DefaultExports.initialize();
             server = new HTTPServer(config.socket, CollectorRegistry.defaultRegistry, true);
+            kafkaExporter = new KafkaExporter(CollectorRegistry.defaultRegistry, config.file);
         }
         catch (IllegalArgumentException e) {
             System.err.println("Usage: -javaagent:/path/to/JavaAgent.jar=[host:]<port>:<yaml configuration file>");
